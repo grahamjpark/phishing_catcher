@@ -12,18 +12,21 @@
 import re
 
 import certstream
-import entropy
+# import entropy
 import tqdm
 import yaml
 from Levenshtein import distance
 from termcolor import colored, cprint
 from tld import get_tld
-
+from airtable import post_to_airtable
 from confusables import unconfuse
 
 certstream_url = 'wss://certstream.calidog.io'
 
 log_suspicious = 'suspicious_domains.log'
+
+with open('external.yaml', 'r') as f:
+    external = yaml.safe_load(f)
 
 pbar = tqdm.tqdm(desc='certificate_update', unit='cert')
 
@@ -55,7 +58,7 @@ def score_domain(domain):
         pass
 
     # Higer entropy is kind of suspicious
-    score += int(round(entropy.shannon_entropy(domain)*50))
+    # score += int(round(entropy.shannon_entropy(domain)*50))
 
     # Remove lookalike characters using list from http://www.unicode.org/reports/tr39
     domain = unconfuse(domain)
@@ -112,18 +115,26 @@ def callback(message, context):
                 tqdm.tqdm.write(
                     "[!] Suspicious: "
                     "{} (score={})".format(colored(domain, 'red', attrs=['underline', 'bold']), score))
+                if external["use_airtable"]:
+                    post_to_airtable(str(domain), score, "High")
             elif score >= 90:
                 tqdm.tqdm.write(
                     "[!] Suspicious: "
                     "{} (score={})".format(colored(domain, 'red', attrs=['underline']), score))
+                if external["use_airtable"]:
+                    post_to_airtable(str(domain), score, "Medium")
             elif score >= 80:
                 tqdm.tqdm.write(
                     "[!] Likely    : "
                     "{} (score={})".format(colored(domain, 'yellow', attrs=['underline']), score))
+                if external["use_airtable"]:
+                    post_to_airtable(str(domain), score, "Low")
             elif score >= 65:
                 tqdm.tqdm.write(
                     "[+] Potential : "
                     "{} (score={})".format(colored(domain, attrs=['underline']), score))
+                if external["use_airtable"]:
+                    post_to_airtable(domain, score, "Potential")
 
             if score >= 75:
                 with open(log_suspicious, 'a') as f:
@@ -133,9 +144,6 @@ def callback(message, context):
 if __name__ == '__main__':
     with open('suspicious.yaml', 'r') as f:
         suspicious = yaml.safe_load(f)
-
-    with open('external.yaml', 'r') as f:
-        external = yaml.safe_load(f)
 
     if external['override_suspicious.yaml'] is True:
         suspicious = external

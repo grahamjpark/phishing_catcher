@@ -12,3 +12,29 @@ tlds:
 # Add your own TLDs here, e.g.:
 #    '.nu':
 #    '.se':
+
+# If you wish to load results into a easy to work with
+# spreadsheet like interface, create an airtable account
+# and enable the settings below. 
+# Create and account use this link:
+# https://airtable.com/invite/r/4fRCjkLN
+
+# Then click "Copy Base" in the top right here:
+# https://airtable.com/shreMkYxDV2ax590R
+
+use_airtable: true
+
+airtable:
+  # Useful to help keep you from running over the row limits
+  # of your base in airtable
+  min_score: 80
+
+  # Find here: https://airtable.com/account
+  api_key: <<>>
+
+  # To find the base id, when viewing the base click
+  # Help -> API Documentation. Then you should be able to
+  # find it between /v0/<<base_id>>/Hits in an example
+  base_id: <<>>
+
+
