@@ -37,4 +37,12 @@ airtable:
   # find it between /v0/<<base_id>>/Hits in an example
   base_id: <<>>
 
+# NOTE: Right now most urlscans come back as forbidden or
+#       some other state of broken, not super useful.
+use_urlscan: true
 
+urlscan:
+  api_key: <<>>
+
+  # For the benefit of the security community, please leave this on
+  public_scans: "on"

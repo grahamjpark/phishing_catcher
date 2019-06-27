@@ -18,7 +18,7 @@ import yaml
 from Levenshtein import distance
 from termcolor import colored, cprint
 from tld import get_tld
-from airtable import post_to_airtable
+from airtable import post_to_airtable, update_logged_list
 from confusables import unconfuse
 
 certstream_url = 'wss://certstream.calidog.io'
@@ -142,6 +142,9 @@ def callback(message, context):
 
 
 if __name__ == '__main__':
+    if external["use_airtable"]:
+        update_logged_list()
+
     with open('suspicious.yaml', 'r') as f:
         suspicious = yaml.safe_load(f)
 
