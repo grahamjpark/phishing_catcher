@@ -11,7 +11,7 @@ urlscan_url = "https://urlscan.io/api/v1/scan/"
 
 def scan_url(bad_url):
     try:
-        print("Scanning url")
+        print("Scanning url via URLScan")
         payload = {
             "url": bad_url,
             "public": urlscan_config["public_scans"]

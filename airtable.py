@@ -1,7 +1,8 @@
 import requests
 import yaml
 import json
-from urlscan import scan_url
+import urlscan
+import virustotal
 
 with open('external.yaml', 'r') as f:
     external = yaml.safe_load(f)
@@ -15,7 +16,7 @@ def _is_postable(bad_url, score, indicators):
     if score < airtable_config.get("min_score"):
         return False
     elif bad_url in already_logged:
-        print("Domain already logged")
+        print("\nDomain already logged")
         return False
     else:
         return True
@@ -73,10 +74,17 @@ def post_to_airtable(bad_url, score, priority, indicators=[]):
         }
 
         if external.get("use_urlscan"):
-            urlscan_response = scan_url(trimmed_url)
+            urlscan_response = urlscan.scan_url(trimmed_url)
             if urlscan_response and urlscan_response.get("result"):
                 payload["fields"].update({
                     "URLScan": urlscan_response.get("result")
+                })
+
+        if external.get("use_virustotal"):
+            urlscan_response =  virustotal.scan_url(trimmed_url)
+            if urlscan_response and urlscan_response.get("permalink"):
+                payload["fields"].update({
+                    "VirusTotal": urlscan_response.get("permalink")
                 })
 
         headers = {

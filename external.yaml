@@ -46,3 +46,9 @@ urlscan:
 
   # For the benefit of the security community, please leave this on
   public_scans: "on"
+
+use_virustotal: true
+
+virustotal:
+  api_key: <<>>
+  
